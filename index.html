@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>𝐋𝐎𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐂𝐁 นายนิวัฒณ์ ชัยชะนะ— Day/Night & Place Assessment</title>
+<title> 𝐋𝐎𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐂𝐁 นายนิวัฒณ์ ชัยชะนะ — Day/Night & Place Assessment</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 body{margin:0;background:#07111d;color:#eaf2ff;font-family:Arial,sans-serif} header{padding:20px 25px;background:#0d1c2e;border-bottom:1px solid #24415e}
@@ -27,9 +27,28 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px;borde
 .legend-note{margin-top:9px;padding-top:9px;border-top:1px solid #20374d;color:#91a8bd;font-size:11px}
 .dot{width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid #fff6}
 .home-dot{background:#d88cff}.work-dot{background:#48d8ee}.other-dot{background:#ffd166}
-@media(max-width:650px){.cards{grid-template-columns:1fr}.map-toolbar{align-items:flex-start}.map-modes{width:100%;flex-wrap:wrap}.map-mode{flex:1}.layout{grid-template-columns:1fr}#map{height:520px}}</style></head>
+@media(max-width:650px){.cards{grid-template-columns:1fr}.map-toolbar{align-items:flex-start}.map-modes{width:100%;flex-wrap:wrap}.map-mode{flex:1}.layout{grid-template-columns:1fr}#map{height:520px}}
+.history7{overflow:hidden}
+.history-controls{display:flex;align-items:center;gap:8px}
+.history-controls select{padding:9px 12px;border-radius:9px;border:1px solid #294b68;background:#0a1725;color:#fff}
+.history-layout{display:grid;grid-template-columns:1fr 330px;gap:12px;margin-top:12px}
+#historyMap{height:430px;border:1px solid #203a55;border-radius:12px;overflow:hidden}
+.history-summary{border:1px solid #203a55;border-radius:12px;background:#091624;padding:12px;overflow:auto;max-height:430px}
+.history-stat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #20374d}
+.history-list{margin-top:8px}
+.history-item{padding:9px 0;border-bottom:1px solid #1d344b;font-size:12px}
+.history-item b{font-size:13px}
+@media(max-width:900px){.history-layout{grid-template-columns:1fr}#historyMap{height:480px}}
+
+.history-map-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
+.place-detail{padding:11px;border:1px solid #203a55;border-radius:10px;background:#091624;margin-bottom:10px;line-height:1.6}
+.place-title{font-size:14px;font-weight:700}
+.place-address{font-size:12px;color:#91a8bd;margin-top:4px}
+.place-meta{font-size:11px;color:#91a8bd;margin-top:7px}
+.place-loading{font-size:12px;color:#91a8bd}
+</style></head>
 <body>
-<header><h1>📍 𝐋𝐎𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐂𝐁 นายนิวัฒณ์ ชัยชะนะ</h1>
+<header><h1>📍  𝐋𝐎𝐂𝐀𝐓𝐈𝐎𝐍 𝐒𝐂𝐁 นายนิวัฒณ์ ชัยชะนะ </h1>
 <div class="muted">วิเคราะห์รูปแบบการใช้งานจาก LAT/LONG + วัน/เวลา เพื่อประเมิน “ที่พัก / ที่ทำงาน / จุดใช้งานอื่น”</div></header>
 <div class="wrap">
 <div class="cards">
@@ -44,7 +63,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px;borde
   <div class="map-title">🗺️ แผนที่จุดใช้งาน</div>
   <div class="map-modes" role="group" aria-label="โหมดแผนที่">
     <button id="roadBtn" class="map-mode active">🗺️ แผนที่ถนน</button>
-    <button id="satBtn" class="map-mode">🛰️ ดาวเทียม</button><button id="fitBtn" class="map-mode">🎯 แสดงทั้งหมด</button>
+    <button id="satBtn" class="map-mode">🛰️ Satellite view </button><button id="fitBtn" class="map-mode">🎯 แสดงทั้งหมด</button>
   </div>
 </div>
 <div id="map"></div>
@@ -70,6 +89,38 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:8px;borde
 <div id="list"></div></div>
 </div>
 <div class="card" style="margin-top:14px"><b>รายละเอียดจุด</b><div id="detail" class="muted" style="margin-top:8px">คลิกจุดบนแผนที่หรือรายการ</div></div>
+
+<div class="card history7" style="margin-top:14px">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+    <div>
+      <b>📅 แผนที่การใช้งานย้อนหลัง 7 วัน</b>
+      <div class="muted" style="margin-top:4px">เลือกวันที่เพื่อดูจุดที่มีการใช้งานของวันนั้น โดยข้อมูลเดิมและแผนที่หลักยังคงเหมือนเดิม</div>
+    </div>
+    <div class="history-controls">
+      <label for="historyDate" class="muted">วันที่</label>
+      <select id="historyDate"></select>
+    </div>
+  </div>
+  <div class="history-map-toolbar">
+    <div><b>🗺️ แผนที่ย้อนหลัง</b></div>
+    <div class="map-modes">
+      <button id="historyRoadBtn" class="map-mode active">🗺️ ถนน</button>
+      <button id="historySatBtn" class="map-mode">🛰️ Satellite View</button>
+    </div>
+  </div>
+  <div class="history-layout">
+    <div id="historyMap"></div>
+    <div class="history-summary">
+      <div id="historyPlace" class="place-detail">
+        <b>📍 รายละเอียดสถานที่</b>
+        <div class="muted" style="margin-top:6px">คลิกจุดบนแผนที่เพื่อค้นหาสถานที่โดยประมาณ</div>
+      </div>
+      <div class="history-stat"><span>รายการ</span><b id="historyCount">0</b></div>
+      <div class="history-stat"><span>จุด</span><b id="historyPoints">0</b></div>
+      <div id="historyList" class="history-list"></div>
+    </div>
+  </div>
+</div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -128,6 +179,22 @@ function show(r){document.getElementById('detail').innerHTML=`<b>จุด #${r[
 กลางวัน ${r['กลางวัน']} ครั้ง / กลางคืน ${r['กลางคืน']} ครั้ง<br>
 ช่วงข้อมูล: ${r['เวลาเริ่มต้น']} ถึง ${r['เวลาล่าสุด']}<br>
 เหตุผล: ${r['เหตุผลจากข้อมูล']}`}
+
+async function mainPlaceDetails(lat, lon, category){
+  let node=document.getElementById('detail');
+  node.innerHTML=`<b>📍 กำลังค้นหารายละเอียดสถานที่…</b><br>พิกัด ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}`;
+  try{
+    const u=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=18&addressdetails=1&accept-language=th`;
+    const res=await fetch(u,{headers:{'Accept':'application/json'}});
+    if(!res.ok) throw new Error();
+    const d=await res.json(), a=d.address||{};
+    const place=d.name||a.amenity||a.building||a.shop||a.office||a.tourism||a.road||'ไม่พบชื่อสถานที่';
+    node.innerHTML=`<b>📍 ${category}</b><br><b>${place}</b><br><span class="muted">${d.display_name||'ไม่พบรายละเอียดที่อยู่'}</span><br><span class="muted">พิกัด ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}</span>`;
+  }catch(e){
+    node.innerHTML=`<b>📍 ${category}</b><br>ไม่สามารถดึงรายละเอียดสถานที่ได้<br><span class="muted">พิกัด ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}</span>`;
+  }
+}
+
 function render(){
  markers.forEach(m=>map.removeLayer(m));markers=[];
  const q=document.getElementById('q').value.toLowerCase();
@@ -142,7 +209,7 @@ m.bindPopup(`<div style="min-width:200px"><b>จุด #${r['อันดับ'
 ☀️ กลางวัน: ${r['กลางวัน']} ครั้ง<br>
 🌙 กลางคืน: ${r['กลางคืน']} ครั้ง<br>
 พิกัด: ${r.LATITUDE}, ${r.LONGITUDE}</div>`);
- m.on('click',()=>show(r)); markers.push(m)})
+ m.on('click',()=>{show(r); mainPlaceDetails(r.LATITUDE,r.LONGITUDE,cls(r)==='home'?'ที่พัก':cls(r)==='work'?'ที่ทำงาน':'ยังสรุปไม่ได้');}); markers.push(m)})
  document.getElementById('list').innerHTML=a.map(r=>`<div class="item" onclick="map.setView([${r.LATITUDE},${r.LONGITUDE}],16);show(DATA.find(x=>x['อันดับ']===${r['อันดับ']}))">
  <b>#${r['อันดับ']} — ${r['ผลประเมิน']}</b><br>
  <span class="muted">${r.LATITUDE}, ${r.LONGITUDE} · ${r['จำนวนครั้ง']} ครั้ง · กลางวัน ${r['กลางวัน']} / กลางคืน ${r['กลางคืน']}</span><br>
@@ -150,4 +217,122 @@ m.bindPopup(`<div style="min-width:200px"><b>จุด #${r['อันดับ'
 }
 document.querySelectorAll('button[data-f]').forEach(b=>b.onclick=()=>{document.querySelectorAll('button[data-f]').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.f;render()});
 document.getElementById('q').oninput=render; render();
+
+/* ===== 7-DAY HISTORICAL USAGE MAP ===== */
+const historyMap = L.map('historyMap', {zoomControl:true}).setView([7.862383546814961,98.35165317728348],12);
+const historyRoad = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors',maxZoom:19
+});
+const historySatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+  attribution:'© Esri, Maxar, Earthstar Geographics',maxZoom:19
+});
+historyRoad.addTo(historyMap);
+
+const historyRoadBtn=document.getElementById('historyRoadBtn');
+const historySatBtn=document.getElementById('historySatBtn');
+if(historyRoadBtn && historySatBtn){
+  historyRoadBtn.addEventListener('click',()=>{
+    if(!historyMap.hasLayer(historyRoad)){historyMap.removeLayer(historySatellite);historyRoad.addTo(historyMap);}
+    historyRoadBtn.classList.add('active');historySatBtn.classList.remove('active');
+  });
+  historySatBtn.addEventListener('click',()=>{
+    if(!historyMap.hasLayer(historySatellite)){historyMap.removeLayer(historyRoad);historySatellite.addTo(historyMap);}
+    historySatBtn.classList.add('active');historyRoadBtn.classList.remove('active');
+  });
+}
+
+const historyData = Array.isArray(DATA) ? DATA : [];
+const historyDates = [];
+historyData.forEach(r => {
+  const start = String(r['เวลาเริ่มต้น'] || '').slice(0,10);
+  const end = String(r['เวลาล่าสุด'] || '').slice(0,10);
+  [start,end].forEach(d => { if(/^\d{4}-\d{2}-\d{2}$/.test(d) && !historyDates.includes(d)) historyDates.push(d); });
+});
+
+/*
+  The current dashboard's embedded DATA is already aggregated by location.
+  For the historical view, each location is shown on the days represented by
+  its source date range. This keeps the original dashboard unchanged.
+*/
+historyDates.sort().reverse();
+const last7 = historyDates.slice(0,7);
+
+const historyDateEl = document.getElementById('historyDate');
+last7.forEach(d => {
+  const opt=document.createElement('option');
+  opt.value=d;
+  opt.textContent=new Date(d+'T00:00:00').toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'});
+  historyDateEl.appendChild(opt);
+});
+
+let historyMarkers=[];
+function historyColor(r){
+  return cls(r)==='home' ? '#d88cff' : cls(r)==='work' ? '#48d8ee' : '#ffd166';
+}
+
+
+let geoTimer=null;
+async function loadPlaceDetails(lat, lon, extra=''){
+  const box=document.getElementById('historyPlace');
+  box.innerHTML=`<b>📍 รายละเอียดสถานที่</b><div class="place-loading">กำลังค้นหาสถานที่โดยประมาณ…</div>`;
+  try{
+    const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}&zoom=18&addressdetails=1&accept-language=th`;
+    const response=await fetch(url,{headers:{'Accept':'application/json'}});
+    if(!response.ok) throw new Error('Reverse geocoding failed');
+    const data=await response.json();
+    const a=data.address||{};
+    const place=data.name || a.amenity || a.building || a.shop || a.office || a.tourism || a.road || 'ไม่พบชื่อสถานที่';
+    const address=data.display_name || 'ไม่พบรายละเอียดที่อยู่';
+    box.innerHTML=`<b>📍 รายละเอียดสถานที่</b>
+      <div class="place-title">${place}</div>
+      <div class="place-address">${address}</div>
+      <div class="place-meta">พิกัด ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)}${extra ? ' · '+extra : ''}</div>`;
+  }catch(e){
+    box.innerHTML=`<b>📍 รายละเอียดสถานที่</b>
+      <div class="place-address">ไม่สามารถดึงชื่อสถานที่ได้ในขณะนี้</div>
+      <div class="place-meta">พิกัด ${Number(lat).toFixed(6)}, ${Number(lon).toFixed(6)} · ตรวจสอบบน Satellite View ได้</div>`;
+  }
+}
+
+function renderHistory(date){
+  historyMarkers.forEach(m=>historyMap.removeLayer(m));
+  historyMarkers=[];
+  const candidates=historyData.filter(r=>{
+    const a=String(r['เวลาเริ่มต้น']||'').slice(0,10);
+    const b=String(r['เวลาล่าสุด']||'').slice(0,10);
+    return date>=a && date<=b;
+  });
+
+  candidates.forEach(r=>{
+    const m=L.circleMarker([r.LATITUDE,r.LONGITUDE],{
+      radius:Math.min(16,5+Math.sqrt(Number(r['จำนวนครั้ง']||1))*2),
+      color:historyColor(r),fillColor:historyColor(r),fillOpacity:.62,weight:2
+    }).addTo(historyMap);
+    m.bindPopup(`<b>ย้อนหลัง 7 วัน</b><br>
+      จุด #${r['อันดับ']}<br>
+      ${cls(r)==='home'?'🟣 ที่พัก':cls(r)==='work'?'🔵 ที่ทำงาน':'🟡 อื่น/ยังสรุปไม่ได้'}<br>
+      พิกัด: ${r.LATITUDE}, ${r.LONGITUDE}<br>
+      จำนวนครั้งในข้อมูล: ${r['จำนวนครั้ง']}`);
+    m.on('click',()=>loadPlaceDetails(r.LATITUDE,r.LONGITUDE,cls(r)==='home'?'ที่พัก':cls(r)==='work'?'ที่ทำงาน':'ยังสรุปไม่ได้'));
+    historyMarkers.push(m);
+  });
+
+  document.getElementById('historyCount').textContent=candidates.reduce((s,r)=>s+Number(r['จำนวนครั้ง']||0),0);
+  document.getElementById('historyPoints').textContent=candidates.length;
+  document.getElementById('historyList').innerHTML=candidates.slice(0,30).map(r=>`
+    <div class="history-item">
+      <b>#${r['อันดับ']} · ${cls(r)==='home'?'🟣 ที่พัก':cls(r)==='work'?'🔵 ที่ทำงาน':'🟡 อื่น/ยังสรุปไม่ได้'}</b><br>
+      <span class="muted">${r.LATITUDE}, ${r.LONGITUDE} · ${r['จำนวนครั้ง']} ครั้ง</span>
+    </div>`).join('') || '<div class="muted">ไม่พบข้อมูลสำหรับวันที่เลือก</div>';
+
+  if(historyMarkers.length){
+    historyMap.fitBounds(L.featureGroup(historyMarkers).getBounds().pad(.12));
+  }
+}
+
+if(last7.length){
+  historyDateEl.value=last7[0];
+  renderHistory(last7[0]);
+}
+historyDateEl.addEventListener('change',()=>renderHistory(historyDateEl.value));
 </script></body></html>
